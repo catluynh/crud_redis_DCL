@@ -21,7 +21,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees")
-    public List<Employee> findAll(){
+    public Set<Employee> findAll(){
         return employeeRepository.findAll();
     }
 

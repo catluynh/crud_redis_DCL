@@ -21,29 +21,37 @@ public class EmployeeRepository {
     public EmployeeRepository(RedisTemplate redisTemplate) {
         this.hashOperations = redisTemplate.opsForHash();
         this.listOperations = redisTemplate.opsForList();
+        this.setOperations = redisTemplate.opsForSet();
         this.redisTemplate = redisTemplate;
 
     }
 
     public void saveEmployee(Employee employee){
        // hashOperations.put("EMPLOYEE", employee.getId(), employee);
-        listOperations.leftPush("EMPLOYEE", employee);
+        //listOperations.leftPush("EMPLOYEE", employee);
+        setOperations.add("EMPLOYEE",employee );
     }
 
-    public List<Employee> findAll(){
+    public Set<Employee> findAll(){
        //return hashOperations.values("EMPLOYEE");
-        return listOperations.range("EMPLOYEE",0,listOperations.size("EMPLOYEE"));
+        //return listOperations.range("EMPLOYEE",0,listOperations.size("EMPLOYEE"));
+        return setOperations.members("EMPLOYEE");
     }
 
     public Employee findById(Integer id){
         //return (Employee) hashOperations.get("EMPLOYEE", id);
-        List<Employee> employees = this.findAll();
+//        List<Employee> employees = this.findAll();
+//        for (Employee employee : employees) {
+//            if(employee.getId() == id)
+//                return employee;
+//        }
+//        return null;
+        Set<Employee> employees = this.findAll();
         for (Employee employee : employees) {
             if(employee.getId() == id)
                 return employee;
         }
         return null;
-
     }
 
     public void update(Employee employee){
@@ -51,7 +59,8 @@ public class EmployeeRepository {
     }
     public void delete(Integer id){
         //hashOperations.delete("EMPLOYEE", id);
-        listOperations.remove("EMPLOYEE", 1, findById(id));
-
+       // listOperations.remove("EMPLOYEE", 1, findById(id));
+        Employee employee = findById(id);
+        setOperations.remove("EMPLOYEE", employee);
     }
 }
